@@ -1,6 +1,8 @@
 import System.Environment (getArgs)
 import qualified System.IO as IO
 import qualified Data.ByteString as B
+import Command
+import Dump
 
 
 main = do
@@ -11,4 +13,6 @@ main = do
     inh <- IO.openBinaryFile (head args) IO.ReadMode
     input <- B.unpack <$> B.hGetContents inh
     let 
-      input' = 
+      input' = Command.convert input
+		in
+			Dump.dump_list input'
