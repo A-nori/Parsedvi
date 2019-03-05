@@ -27,6 +27,7 @@ dump_list ((Set_Char x):xs) n = do
   putIndent n
   putStrLn ("Set_Char " ++ [(toEnum $ fromEnum x)])
   dump_list xs n
+-- otehrwise
 dump_list (x:xs) n = do
   putIndent n
   putStrLn $ show x

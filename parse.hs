@@ -12,6 +12,7 @@ main = do
   else do
     inh <- IO.openBinaryFile (head args) IO.ReadMode
     input <- B.unpack <$> B.hGetContents inh
+    IO.hClose inh
     let 
       input' = Command.convert input
     Dump.dump_list input' 0

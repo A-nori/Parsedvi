@@ -1,2 +1,2 @@
 # Parsedvi
-parse and dump dvi(device independence) file
+parse and dump a dvi(device independence) file
