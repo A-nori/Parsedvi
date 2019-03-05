@@ -14,5 +14,4 @@ main = do
     input <- B.unpack <$> B.hGetContents inh
     let 
       input' = Command.convert input
-		in
-			Dump.dump_list input'
+    Dump.dump_list input' 0

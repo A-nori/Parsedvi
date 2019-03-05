@@ -1,5 +1,5 @@
 module Command (
-  Command,
+  Command(..),
   convert
   ) where
 
@@ -64,6 +64,7 @@ fetch_4nbytes_to_Int n (x1:x2:x3:x4:xs) =
   in
     ((fourbytes_to_Int x1 x2 x3 x4) : l, ret)
 
+-- fetch n bytes and vovert them to String
 fetch_nbytes_to_String :: Int -> [Word8] -> (String, [Word8])
 fetch_nbytes_to_String 0 xs = ("", xs)
 fetch_nbytes_to_String n (x:xs) =
@@ -73,41 +74,42 @@ fetch_nbytes_to_String n (x:xs) =
     ((toEnum $ fromEnum x) : l, ret)
 
 
-
+-- convert [Word8] to [Command]
+-- tail recursion
 convert_sub [] l = reverse l
 convert_sub (x : xs) l
-  |  0 <= x && x <= 127 = 
+  |  0 <= x && x <= 127 = -- set_char
     let currcom = Set_Char x
     in convert_sub xs (currcom : l)
-  |  x <= 131 = 
+  |  x <= 131 = -- set
     let 
       n = x - 127
       (c, xs') = fetch n xs
       currcom = Set n c
     in
       convert_sub xs' (currcom : l)
-  | x == 132 =
+  | x == 132 = -- set_rule
     let
       ([a, b], xs') = fetch_4nbytes_to_Int 2 xs
       currcom = Set_Rule a b
     in
       convert_sub xs' (currcom : l)
-  | x <= 136 = 
+  | x <= 136 = -- put
     let 
       n = x - 132
       (c, xs') = fetch n xs
       currcom = Put n c
     in
       convert_sub xs' (currcom : l)
-  | x == 137 =
+  | x == 137 = -- put_rule
     let
       ([a, b], xs') = fetch_4nbytes_to_Int 2 xs
       currcom = Set_Rule a b
     in
       convert_sub xs' (currcom : l)
-  | x == 138 =
+  | x == 138 = -- nop
     convert_sub xs (Nop : l)
-  | x == 139 =
+  | x == 139 = -- bop
     let
       (params, xs') = fetch_4nbytes_to_Int 11 xs
       cs = init params
@@ -115,13 +117,13 @@ convert_sub (x : xs) l
       currcom = Bop cs p
     in
       convert_sub xs' (currcom : l)
-  | x == 140 =
+  | x == 140 = -- eop
     convert_sub xs (Eop : l)
-  | x == 141 =
+  | x == 141 = -- push
     convert_sub xs (Push : l)
-  | x == 142 =
+  | x == 142 = -- pop
     convert_sub xs (Pop : l)
-  | x <= 146 = 
+  | x <= 146 = -- right 
     let 
       n = x - 142
       (c, xs') = fetch n xs
@@ -146,7 +148,7 @@ convert_sub (x : xs) l
       currcom = X n c
     in
       convert_sub xs' (currcom : l)
-  | x <= 160 = 
+  | x <= 160 = -- down
     let 
       n = x - 156
       (c, xs') = fetch n xs
@@ -164,7 +166,7 @@ convert_sub (x : xs) l
       convert_sub xs' (currcom : l)
   | x == 166 = -- z0
     convert_sub xs (Z0 : l)
-  | x <= 170 = 
+  | x <= 170 = -- z
     let 
       n = x - 166
       (c, xs') = fetch n xs
