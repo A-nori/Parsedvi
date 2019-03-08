@@ -1,5 +1,5 @@
-SOURCE=parse.hs dump.hs command.hs
-MAIN=parse
+SOURCE=main.hs dump.hs command.hs
+MAIN=dvidump
 
 parse : $(SOURCE)
 	ghc $^ -o $(MAIN)

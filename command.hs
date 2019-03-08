@@ -33,8 +33,8 @@ data Command =
   | Xxx Word8 Int String
   | Fnt_Def Word8 Int Int Int Int Int Int String
   | Pre Int Int Int Int Int String
-  | Post 
-  | Post_Post
+  | Post Int Int Int Int Int Int Int Int 
+  | Post_Post Int Word8
   | Undifined
   deriving Show
 
@@ -102,7 +102,7 @@ fetch_4nbytes_to_Int n (x1:x2:x3:x4:xs) =
   let 
     (l, ret) = fetch_4nbytes_to_Int (n - 1) xs
   in
-    ((fourbytes_to_Int x1 x2 x3 x4) : l, ret)
+    (fst (fetch_signed 4 [x1, x2, x3, x4]) : l, ret)
 
 -- fetch n bytes and vovert them to String
 fetch_nbytes_to_String :: Int -> [Word8] -> (String, [Word8])
@@ -112,7 +112,14 @@ fetch_nbytes_to_String n (x:xs) =
     (l, ret) = fetch_nbytes_to_String (n - 1) xs
   in
     ((toEnum $ fromEnum x) : l, ret)
+fetch_nbytes_to_String n [] = error "hoge"
 
+
+
+devour_df :: [Word8] -> ()
+devour_df (223:xs) = devour_df xs
+devour_df [] = ()
+  
 
 -- convert [Word8] to [Command]
 -- tail recursion
@@ -144,7 +151,7 @@ convert_sub (x : xs) l
   | x == 137 = -- put_rule
     let
       ([a, b], xs') = fetch_4nbytes_to_Int 2 xs
-      currcom = Set_Rule a b
+      currcom = Put_Rule a b
     in
       convert_sub xs' (currcom : l)
   | x == 138 = -- nop
@@ -170,7 +177,7 @@ convert_sub (x : xs) l
       currcom = Command.Right n c
     in
       convert_sub xs' (currcom : l)
-  | x == 150 = -- w0
+  | x == 147 = -- w0
     convert_sub xs (W0 : l)
   | x <= 151 = -- w
     let 
@@ -214,7 +221,7 @@ convert_sub (x : xs) l
     in
       convert_sub xs' (currcom : l)
   | x <= 234 = -- fnt_num
-    convert_sub xs (Fnt_Num (x - 171): l)
+    convert_sub xs (Fnt_Num (x - 171) : l)
   | x <= 238 = -- fnt
     let 
       n = x - 234
@@ -225,7 +232,7 @@ convert_sub (x : xs) l
   | x <= 242 = -- xxx
     let 
       n = x - 238
-      (k, xs') = fetch_signed n xs
+      (k, xs') = fetch_unsigned n xs
       (str, xs'') = fetch_nbytes_to_String k xs'
       currcom = Xxx n k str
     in
@@ -250,9 +257,27 @@ convert_sub (x : xs) l
       currcom = Pre i num den mag k x
     in
       convert_sub xs'''' (currcom : l)
+  | x == 248 = -- post
+    let 
+      ([p, num, den, mag, l', u], xs') = fetch_4nbytes_to_Int 6 xs
+      (s, xs'') = fetch_unsigned 2 xs'
+      (t, xs''') = fetch_unsigned 2 xs''
+      currcom = Post p num den mag l' u s t
+    in
+      convert_sub xs''' (currcom : l)
+  | x == 249 = -- post_post
+    let 
+      (q, xs') = fetch_unsigned 4 xs
+      (i, xs'') = fetch_unsigned 1 xs'
+      _ = devour_df xs''
+      currcom = Post_Post q (fromInteger $ toInteger i)
+    in
+      convert_sub [] (currcom : l)
+         
   | otherwise =
     convert_sub [] l
 
 convert :: [Word8] -> [Command]
 convert l = convert_sub l []
+
 
