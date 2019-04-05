@@ -10,6 +10,31 @@ putIndent n = do
   putIndent (n - 1)
 
 
+-- get preamble
+getPreamble :: [Command] -> (Command, [Command])
+getPreamble coms@(Pre _ _ _ _ _ _:_) = (head coms, tail coms)
+
+-- get postamble
+-- tail recursion
+getPostamble :: [Command] -> ([Command], [Command])
+getPostamble coms = getPostamble_sub [] coms
+
+getPostamble_sub :: [Command] -> [Command] -> ([Command], [Command])
+getPostamble_sub acc post@(Post _ _ _ _ _ _ _ _:_) = (reverse acc, post)
+getPostamble_sub acc (com:coms) = getPostamble_sub (com : acc) coms
+
+-- [Command] to (preamble, main, postamble)
+separate :: [Command] -> (Command, [Command], [Command])
+separate coms =
+  let 
+    (pre, rest) = getPreamble coms
+  in
+  let 
+    (main, post) = getPostamble rest
+  in
+    (pre, main, post)
+
+
 dump_list :: [Command] -> Int -> IO ()
 dump_list [] _ = return ()
 -- Push
