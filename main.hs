@@ -15,4 +15,4 @@ main = do
     IO.hClose inh
     let 
       input' = Command.convert input
-    Dump.dump_list input' 0
+    Dump.dumpCommands input'
