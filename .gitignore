@@ -1,4 +1,8 @@
 
+*.tex
+*.log
 *.dvi
+*.aux
 *.o
 *.hi
+dvidump
