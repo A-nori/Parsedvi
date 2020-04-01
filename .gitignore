@@ -1,10 +1,2 @@
-
-*.tex
-*.log
-*.dvi
-*.aux
-*.o
-*.hi
-dvidump
-
-trial
+.stack-work/
+*~

@@ -1,0 +1,67 @@
+cabal-version: 1.12
+
+-- This file has been generated from package.yaml by hpack version 0.31.2.
+--
+-- see: https://github.com/sol/hpack
+--
+-- hash: c91b49931e685941dc09ec7f4d5bb59603364f12ecbf635c74d79dd84210fff4
+
+name:           dvidump
+version:        0.1.0.0
+description:    Please see the README on GitHub at <https://github.com/ToshiyaAsai/dvidump#readme>
+homepage:       https://github.com/ToshiyaAsai/dvidump#readme
+bug-reports:    https://github.com/ToshiyaAsai/dvidump/issues
+author:         Toshiya Asai
+maintainer:     formanyy@gmail.com
+copyright:      Toshiya Asai
+license:        BSD3
+license-file:   LICENSE
+build-type:     Simple
+extra-source-files:
+    README.md
+    ChangeLog.md
+
+source-repository head
+  type: git
+  location: https://github.com/ToshiyaAsai/dvidump
+
+library
+  exposed-modules:
+      Command
+      Dump
+      Lib
+  other-modules:
+      Paths_dvidump
+  hs-source-dirs:
+      src
+  build-depends:
+      base >=4.7 && <5
+    , bytestring >=0.0
+  default-language: Haskell2010
+
+executable dvidump-exe
+  main-is: Main.hs
+  other-modules:
+      Paths_dvidump
+  hs-source-dirs:
+      app
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , bytestring >=0.0
+    , dvidump
+  default-language: Haskell2010
+
+test-suite dvidump-test
+  type: exitcode-stdio-1.0
+  main-is: Spec.hs
+  other-modules:
+      Paths_dvidump
+  hs-source-dirs:
+      test
+  ghc-options: -threaded -rtsopts -with-rtsopts=-N
+  build-depends:
+      base >=4.7 && <5
+    , bytestring >=0.0
+    , dvidump
+  default-language: Haskell2010

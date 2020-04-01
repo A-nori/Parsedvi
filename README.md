@@ -1,4 +1,4 @@
-(not completed)
+# dvidump
 
-# Parse dvi
+## Parse dvi
 parse and dump a dvi(device independent) file
