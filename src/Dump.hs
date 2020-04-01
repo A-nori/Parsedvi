@@ -1,10 +1,15 @@
 module Dump 
+  (
+  dumpCommands
+  )
 where
 
 import Command
 
 
-indent = "  "
+indent = replicate 2 ' '
+
+putIndent :: Int -> IO ()
 putIndent 0 = return ()
 putIndent n = do
   putStr indent
@@ -143,5 +148,3 @@ dumpCommands coms = do
   putChar '\n'
   putStrLn "----- postamble -----"
   dumpPost post
-
-  
